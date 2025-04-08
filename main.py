@@ -47,7 +47,7 @@ def loadCSV(filepath):
 
 
 def upload_score_pdf(student_id, score):
-    driver.get("https://elearn.nthu.edu.tw/mod/assign/view.php?id="+ homework_id + "&action=grader")
+    driver.get("https://elearn.nthu.edu.tw/mod/assign/view.php?id="+ homework_id + "&action=grader" + "&lang=en")
 
     search_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//div[@data-region='user-selector']//div[@class='alignment']//span//input")))
     
@@ -64,7 +64,7 @@ def upload_score_pdf(student_id, score):
     time.sleep(5)
 
     # score submission
-    grade_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//div[@class='felement ftext']//input")))
+    grade_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="id_grade"]')))
     grade_button.send_keys(score)
 
     # for exchange student they will start with ZP-X______ something in the system however, submission normally starts with X
@@ -84,9 +84,9 @@ def upload_score_pdf(student_id, score):
         button = driver.find_element(By.XPATH, "//button[@type='submit' and @name='savechanges']")
         button.click()
 
-        confirmation_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//div[@class='confirmation-buttons text-xs-right']//input[@type='button']")))
-        confirmation_button.click()
-        time.sleep(1)
+        # confirmation_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//div[@class='confirmation-buttons text-xs-right']//input[@type='button']")))
+        # confirmation_button.click()
+        # time.sleep(1)
         print(f'success: {student_id}')
         return
 
@@ -95,12 +95,12 @@ def upload_score_pdf(student_id, score):
     upload_button.click()
     time.sleep(2)
 
-    # change tab to upload pdf
-    tab_button = driver.find_element(By.XPATH, "//ul[@class='fp-list' and @role='tablist']//li[@class='fp-repo first odd active']//a[@tabindex='-1']")
-    tab_button.click()
+    upload_tab = WebDriverWait(driver, 20).until(
+    EC.element_to_be_clickable((By.XPATH, '//div[@role="tab" and .//span[contains(text(), "Upload a file")]]')))
+    upload_tab.click()
 
     # drop pdf
-    drop_area = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH,  "//div[@class='controls']//input[@type='file']")))
+    drop_area = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH,  '//input[@type="file" and @name="repo_upload_file"]')))
     
     print(filepath)
 
@@ -117,9 +117,9 @@ def upload_score_pdf(student_id, score):
     button = driver.find_element(By.XPATH, "//button[@type='submit' and @name='savechanges']")
     button.click()
 
-    confirmation_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//div[@class='confirmation-buttons text-xs-right']//input[@type='button']")))
-    confirmation_button.click()
-    time.sleep(1)
+    # confirmation_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//div[@class='confirmation-buttons text-xs-right']//input[@type='button']")))
+    # confirmation_button.click()
+    # time.sleep(1)
     print(f'success: {student_id}')
 
 # uncomment this later for actual running (the for loop)
