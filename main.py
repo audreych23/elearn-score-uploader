@@ -16,9 +16,9 @@ driver = webdriver.Chrome(options=options)
 ## Setting
 # Please set this to the correct course id and homework id
 # https://elearn.nthu.edu.tw/enrol/index.php?id=???
-course_id = '29087'
+course_id = '35343'
 # https://elearn.nthu.edu.tw/mod/assign/view.php?id=154385&action=grading
-homework_id = '162121'
+homework_id = '190234'
 # modify this depending on the structure of the naming rule of the hw
 homework_prefix = "uploads/HW6_"
 
@@ -67,11 +67,14 @@ def upload_score_pdf(student_id, score):
     grade_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//div[@class='felement ftext']//input")))
     grade_button.send_keys(score)
 
-    # for exchange student they will start with ZP-X______ something in the system however, submission are normally, x
+    # for exchange student they will start with ZP-X______ something in the system however, submission normally starts with X
+    # for student outside of this school, they will start with ZC-______ in the system however, submission normally starts wth the student id
     if student_id[0] == 'Z':
         student_id = student_id[3:]
+
     file_path_rel = homework_prefix + student_id + ".pdf"
     filepath =  os.path.abspath(file_path_rel)
+
     
     if not os.path.exists(filepath):
         print(f"No submission for student with student id : {student_id}")
