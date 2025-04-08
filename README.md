@@ -1,8 +1,7 @@
 # Score Uploader Elearn
 
-Usage:
 main.py - Upload the grade in score.csv and pdf files in uploads/ folder to elearn, the student_id in pdf name has to be the same as the one in score.csv
-- {prefix}{student_id}.pdf in uploads/ -> {student_id}, {student_grade} in score.csb
+- {prefix}{student_id}.pdf in uploads/ -> {student_id}, {student_grade} in score.csv
 modify both course_id and homework_id to upload it to the correct homework and class platform, change hw prefix depending on the regulations, default prefix HW6_ 
 - HW6_{student_id} then change prefix to uploads/HW6_
 
