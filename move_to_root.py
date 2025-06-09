@@ -3,7 +3,7 @@ import shutil
 import sys
 
 if len(sys.argv) < 2:
-    print("Usage: python test.py <folder_path>")
+    print("Usage: python move_to_root.py <folder_path>")
     sys.exit(1)
 
 root_dir = sys.argv[1]
