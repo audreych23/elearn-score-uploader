@@ -6,21 +6,11 @@ from selenium.common.exceptions import *
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 import os, time
+import sys
+
+import argparse
 
 
-# using chrome 
-options = webdriver.ChromeOptions()
-options.add_experimental_option("detach", True)
-driver = webdriver.Chrome(options=options)
-
-## Setting
-# Please set this to the correct course id and homework id
-# https://elearn.nthu.edu.tw/enrol/index.php?id=???
-course_id = '35343'
-# https://elearn.nthu.edu.tw/mod/assign/view.php?id=154385&action=grading
-homework_id = '190234'
-# modify this depending on the structure of the naming rule of the hw
-homework_prefix = "uploads/HW6_"
 
 # Wait for login
 def manual_login():
@@ -122,17 +112,58 @@ def upload_score_pdf(student_id, score):
     # time.sleep(1)
     print(f'success: {student_id}')
 
-# uncomment this later for actual running (the for loop)
-data = loadCSV("score.csv")
-# print(data)
-manual_login()
-move_course()
-# test 
-# upload_score_pdf('107065804', '100')
-# print(data)
-for student_id, score in data:
-    score = "100" if float(score) >= 100 else score
-    upload_score_pdf(student_id, score)
+if __name__ == '__main__':
+    # ---------------------- ARGUMENT PARSING ----------------------
+    parser = argparse.ArgumentParser(description="Upload scores and PDFs to NTHU eLearn")
+    parser.add_argument("--prefix", required=True, default="", help="Homework file prefix, e.g. 'HW5_'")
+    parser.add_argument("--dir", required=True, default="uploads", help="Directory containing PDF files")
+    parser.add_argument("--score", required=True, default="score.csv", help="Path to CSV file containing scores")
+    parser.add_argument("--course_id", required=True, default="", help="Course ID from URL")
+    parser.add_argument("--homework_id", required=True, default="", help="Homework ID from URL")
+
+    args = parser.parse_args()
+
+    homework_prefix = os.path.join(args.dir, args.prefix)
+    course_id = args.course_id
+    homework_id = args.homework_id
+    score_csv_path = args.score
+
+    # using chrome 
+    options = webdriver.ChromeOptions()
+    options.add_experimental_option("detach", True)
+    driver = webdriver.Chrome(options=options)
+
+    # Validate course_id and homework_id
+    if args.course_id.strip() == "":
+        sys.exit("Error: --course_id cannot be an empty string.")
+
+    if args.homework_id.strip() == "":
+        sys.exit("Error: --homework_id cannot be an empty string.")
+
+    ## Setting
+    # Please set this to the correct course id and homework id
+    # https://elearn.nthu.edu.tw/enrol/index.php?id=???
+    # course_id = '35343'
+    # https://elearn.nthu.edu.tw/mod/assign/view.php?id=154385&action=grading
+    # homework_id = '192279'
+    # modify this depending on the structure of the naming rule of the hw
+    # homework_prefix = "uploads/HW2_"
+
+    print("homework_id:", homework_id)
+    print("course_id:",course_id)
+    print("score_csv:", score_csv_path)
+    print("hw_prefix:", homework_prefix)
+    # uncomment this later for actual running (the for loop)
+    data = loadCSV(score_csv_path)
+    manual_login()
+    move_course()
+
+    # test 
+    # upload_score_pdf('107065804', '100')
+    # print(data)
+    for student_id, score in data:
+        score = "100" if float(score) >= 100 else score
+        upload_score_pdf(student_id, score)
 
 
 #bug : if no submission then it broke ;), if no submission then maybe just input mnaully
