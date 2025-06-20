@@ -67,13 +67,6 @@ No headers. Each line is:
 <student_id>,<score>
 ```
 
-#### Usage
-```
-python move_to_root.py {root_folder}
-```
-- {root_folder} is the path to the directory containing all student submission folders.
-- The script will move all PDF files from subdirectories into this root folder.
-
 ## Known Issue:
 
 If the program is interrupted (e.g., due to slow internet or timeout), a partially submitted grade or uploaded PDF may remain in the system.
@@ -89,7 +82,14 @@ After an interruption:
 
 ## Utilities File
 ### move_to_root.py
-
 This utility script helps you reorganize PDF submissions by moving each PDF from individual student folders into a single root folder.
 
 This is useful because eLearn typically stores each uploaded submission inside its own folder.
+
+#### Usage
+```
+python move_to_root.py {root_folder}
+```
+- {root_folder} is the path to the directory containing all student submission folders.
+- The script will move all PDF files from subdirectories into this root folder.
+
