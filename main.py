@@ -117,6 +117,7 @@ def upload_score_pdf(student_id, score, skip_pdf=False):
 
     # score submission
     grade_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="id_grade"]')))
+    grade_button.clear()
     grade_button.send_keys(score)
 
     if skip_pdf:
