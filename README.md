@@ -2,10 +2,12 @@
 This script automates the process of submitting scores and uploading PDF files to NTHU's eLearn platform using Selenium.
 
 ## Features
-- Uploads pdf submissions per student based on their student ID 
 - Inputs the grades from a CSV file
+- Optionally uploads PDF submissions per student based on their student ID
+- Supports score-only mode with `--no-pdf` flag (no PDF upload needed)
+- Supports singleview grade page mode with `--itemid` for quizzes and other non-assignment grade items
 
-**For example, if a CSV row contains `109006273,100`, the script expects to find a PDF named like `<prefix>109006273.pdf`.**
+**For example, if uploading PDFs and a CSV row contains `109006273,100`, the script expects to find a PDF named like `<prefix>109006273.pdf`.**
 
 ## Requirements
 
@@ -21,22 +23,42 @@ Install required Python packages:
 pip install selenium
 ```
 
-## Usage 
+## Usage
 ```bash
 python main.py --help
 ```
-or
+
+### Score + PDF upload
 ```bash
 python main.py --prefix "HW5_" --dir uploads --score score.csv --course_id "{your_course_id}" --homework_id "{your_homework_id}"
 ```
 
-| Argument        | Required | Description | Default |
-|-----------------|----------|---------------------------------------------------------| --------------|
-| `--prefix`      | N        | Prefix of the PDF filenames (e.g., `HW5_`)              | None          |
-| `--dir`         | N        | Directory where PDFs are stored                         | `uploads`     |
-| `--score`       | N        | CSV file path containing student IDs and their scores   | `score.csv`   |  
+### Score only (no PDF)
+```bash
+python main.py --no-pdf --score score.csv --course_id "{your_course_id}" --homework_id "{your_homework_id}"
+```
+
+### Singleview mode (quizzes, non-assignment items)
+For grade items that use the singleview grade report page (e.g., quizzes), use `--itemid` instead of `--homework_id`. The item ID can be found in the URL:
+`https://elearn.nthu.edu.tw/grade/report/singleview/index.php?id={course_id}&item=grade&itemid={item_id}`
+
+```bash
+python main.py --score score.csv --course_id "{your_course_id}" --itemid "{your_item_id}"
+```
+
+| Argument        | Required | Description                                             | Default       |
+|-----------------|----------|---------------------------------------------------------|---------------|
+| `--prefix`      | N*       | Prefix of the PDF filenames (e.g., `HW5_`)              | None          |
+| `--dir`         | N*       | Directory where PDFs are stored                         | `uploads`     |
+| `--score`       | N        | CSV file path containing student IDs and their scores   | `score.csv`   |
 | `--course_id`   | Y        | Course ID from the eLearn URL                           | None          |
-| `--homework_id` | Y        | Homework ID from the eLearn assignment grading page URL | None          | 
+| `--homework_id` | N**      | Homework ID from the eLearn assignment grading page URL | None          |
+| `--itemid`      | N**      | Grade item ID for the singleview page (quizzes, etc.)   | None          |
+| `--no-pdf`      | N        | Only upload scores, skip PDF upload                     | `false`       |
+
+*`--prefix` and `--dir` are required when uploading PDFs (i.e., when `--no-pdf` is **not** used).
+
+**Either `--homework_id` or `--itemid` must be provided. If `--itemid` is provided, singleview mode is used and `--homework_id` is ignored.
 
 ## PDF Filename Format
 
