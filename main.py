@@ -5,7 +5,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.common.exceptions import *
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
-import os, time
+import os, time, re
 import sys
 
 import argparse
@@ -38,7 +38,7 @@ def loadCSV(filepath):
 
 def upload_score_singleview(data):
     """Upload scores via the singleview grade report page (for quizzes, etc. with no PDF)."""
-    driver.get(f"https://elearn.nthu.edu.tw/grade/report/singleview/index.php?id={course_id}&item=grade&itemid={item_id}&lang=en")
+    driver.get(f"https://elearn.nthu.edu.tw/grade/report/singleview/index.php?id={course_id}&item=grade&itemid={item_id}&lang=en&edit=on")
     time.sleep(3)
 
     # Build a lookup dict from CSV: student_id -> score
@@ -54,14 +54,18 @@ def upload_score_singleview(data):
         except NoSuchElementException:
             continue
 
-        # Get the text, skipping the userinitials span
-        # The text contains something like "111006223 吉法爾 Ghiffar Tabina Muhammad 111006223"
+        # The <a> contains a <span class="userinitials"> (e.g. "IN") followed by
+        # a text node like "111006226 江南棠 NAJMA PREVIA JATI".
+        # .text includes both, so we extract the student ID via regex.
         cell_text = user_cell.text.strip()
         if not cell_text:
             continue
 
-        # Extract student ID — it's the first token in the text
-        student_id = cell_text.split()[0]
+        id_match = re.search(r'(Z[PC]-\w+|\d{5,})', cell_text)
+        if not id_match:
+            print(f"Skipping row — no student ID found in: {cell_text}")
+            continue
+        student_id = id_match.group(1)
 
         if student_id not in score_map:
             print(f"Skipping {student_id} — not in CSV")
