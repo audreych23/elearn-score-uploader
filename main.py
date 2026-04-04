@@ -36,9 +36,9 @@ def loadCSV(filepath):
     return res
 
 
-def upload_score_singleview(data):
-    """Upload scores via the singleview grade report page (for quizzes, etc. with no PDF)."""
-    driver.get(f"https://elearn.nthu.edu.tw/grade/report/singleview/index.php?id={course_id}&item=grade&itemid={item_id}&lang=en&edit=on")
+def upload_score_gradebook(data):
+    """Upload scores via the gradebook singleview page (for quizzes, etc. with no PDF)."""
+    driver.get(f"https://elearn.nthu.edu.tw/grade/report/singleview/index.php?id={course_id}&item=grade&itemid={gradebook_id}&lang=en&edit=on")
     time.sleep(3)
 
     # Build a lookup dict from CSV: student_id -> score
@@ -190,27 +190,27 @@ if __name__ == '__main__':
     parser.add_argument("--score", required=True, default="score.csv", help="Path to CSV file containing scores")
     parser.add_argument("--course_id", required=True, default="", help="Course ID from URL")
     parser.add_argument("--homework_id", default="", help="Homework ID from URL (for assignment grader)")
-    parser.add_argument("--itemid", default="", help="Grade item ID for singleview page (for quizzes, no PDF)")
+    parser.add_argument("--gradebook_id", default="", help="Grade item ID for gradebook mode (see README for details)")
     parser.add_argument("--no-pdf", action="store_true", help="Only upload scores, skip PDF upload")
 
     args = parser.parse_args()
 
     no_pdf = args.no_pdf
-    singleview_mode = bool(args.itemid)
+    gradebook_mode = bool(args.gradebook_id)
 
-    if singleview_mode:
-        # Singleview mode: only need course_id, itemid, and score CSV
+    if gradebook_mode:
+        # Gradebook mode: only need course_id, gradebook_id, and score CSV
         pass
     elif not no_pdf and (not args.prefix or not args.dir):
         sys.exit("Error: --prefix and --dir are required when uploading PDFs. Use --no-pdf to skip PDF upload.")
 
-    if not singleview_mode and not args.homework_id:
-        sys.exit("Error: either --homework_id or --itemid is required.")
+    if not gradebook_mode and not args.homework_id:
+        sys.exit("Error: either --homework_id or --gradebook_id is required.")
 
-    homework_prefix = os.path.join(args.dir, args.prefix) if not no_pdf and not singleview_mode else ""
+    homework_prefix = os.path.join(args.dir, args.prefix) if not no_pdf and not gradebook_mode else ""
     course_id = args.course_id
     homework_id = args.homework_id
-    item_id = args.itemid
+    gradebook_id = args.gradebook_id
     score_csv_path = args.score
 
     # using chrome
@@ -233,8 +233,8 @@ if __name__ == '__main__':
 
     print("course_id:", course_id)
     print("score_csv:", score_csv_path)
-    if singleview_mode:
-        print("itemid:", item_id)
+    if gradebook_mode:
+        print("gradebook_id:", gradebook_id)
     else:
         print("homework_id:", homework_id)
         print("hw_prefix:", homework_prefix)
@@ -243,8 +243,8 @@ if __name__ == '__main__':
     manual_login()
     move_course()
 
-    if singleview_mode:
-        upload_score_singleview(data)
+    if gradebook_mode:
+        upload_score_gradebook(data)
     else:
         for student_id, score in data:
             score = "100" if float(score) >= 100 else score

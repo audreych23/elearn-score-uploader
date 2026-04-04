@@ -5,7 +5,7 @@ This script automates the process of submitting scores and uploading PDF files t
 - Inputs the grades from a CSV file
 - Optionally uploads PDF submissions per student based on their student ID
 - Supports score-only mode with `--no-pdf` flag (no PDF upload needed)
-- Supports singleview grade page mode with `--itemid` for quizzes and other non-assignment grade items
+- Supports gradebook mode with `--gradebook_id` for quizzes and other non-assignment grade items
 
 **For example, if uploading PDFs and a CSV row contains `109006273,100`, the script expects to find a PDF named like `<prefix>109006273.pdf`.**
 
@@ -38,12 +38,12 @@ python main.py --prefix "HW5_" --dir uploads --score score.csv --course_id "{you
 python main.py --no-pdf --score score.csv --course_id "{your_course_id}" --homework_id "{your_homework_id}"
 ```
 
-### Singleview mode (quizzes, non-assignment items)
-For grade items that use the singleview grade report page (e.g., quizzes), use `--itemid` instead of `--homework_id`. The item ID can be found in the URL:
-`https://elearn.nthu.edu.tw/grade/report/singleview/index.php?id={course_id}&item=grade&itemid={item_id}`
+### Gradebook mode (quizzes, non-assignment items)
+For grade items that use the gradebook singleview page (e.g., quizzes), use `--gradebook_id` instead of `--homework_id`. The gradebook ID is the `itemid` parameter in the URL:
+`https://elearn.nthu.edu.tw/grade/report/singleview/index.php?id={course_id}&item=grade&itemid={gradebook_id}`
 
 ```bash
-python main.py --score score.csv --course_id "{your_course_id}" --itemid "{your_item_id}"
+python main.py --score score.csv --course_id "{your_course_id}" --gradebook_id "{your_gradebook_id}"
 ```
 
 | Argument        | Required | Description                                             | Default       |
@@ -52,13 +52,13 @@ python main.py --score score.csv --course_id "{your_course_id}" --itemid "{your_
 | `--dir`         | N*       | Directory where PDFs are stored                         | `uploads`     |
 | `--score`       | N        | CSV file path containing student IDs and their scores   | `score.csv`   |
 | `--course_id`   | Y        | Course ID from the eLearn URL                           | None          |
-| `--homework_id` | N**      | Homework ID from the eLearn assignment grading page URL | None          |
-| `--itemid`      | N**      | Grade item ID for the singleview page (quizzes, etc.)   | None          |
+| `--homework_id`  | N**      | Homework ID from the eLearn assignment grading page URL | None          |
+| `--gradebook_id` | N**      | Grade item ID for gradebook mode (quizzes, etc.)        | None          |
 | `--no-pdf`      | N        | Only upload scores, skip PDF upload                     | `false`       |
 
 *`--prefix` and `--dir` are required when uploading PDFs (i.e., when `--no-pdf` is **not** used).
 
-**Either `--homework_id` or `--itemid` must be provided. If `--itemid` is provided, singleview mode is used and `--homework_id` is ignored.
+**Either `--homework_id` or `--gradebook_id` must be provided. If `--gradebook_id` is provided, gradebook mode is used and `--homework_id` is ignored.
 
 ## PDF Filename Format
 
