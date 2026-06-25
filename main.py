@@ -106,14 +106,23 @@ def upload_score_pdf(student_id, score, skip_pdf=False):
     try:
         search_button.send_keys(student_id)
     except:
-        print(f"can't find student id...maybe student isn't enrolled in the course")
-        with open("output.txt", "a") as f:
-            f.write(student_id)
-    # increase time delay if it does not change
+        print(f"Skipping {student_id} — could not interact with search box")
+        with open("skipped.txt", "a") as f:
+            f.write(student_id + "\n")
+        return
+
+    # Capture URL after page load — Moodle updates it with userid= for the default student.
+    # If the URL doesn't change after our search, no student was found (e.g. dropped/unenrolled).
+    url_before_search = driver.current_url
     time.sleep(3)
     search_button.send_keys(Keys.RETURN)
-    # search_button.submit()
     time.sleep(5)
+
+    if driver.current_url == url_before_search:
+        print(f"Skipping {student_id} — not found in grader (possibly dropped/unenrolled)")
+        with open("skipped.txt", "a") as f:
+            f.write(student_id + "\n")
+        return
 
     # score submission
     grade_button = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="id_grade"]')))
